@@ -26,14 +26,13 @@
 				})
 				
 			}else if(target.type == "button"){
-				var i = true;
+				nbDiv.children[0].checked = true;
 ;				Array.prototype.forEach.call(rbDiv.children,function (item,index,array) {
 					item.checked = !item.checked;
 					if(!item.checked){
-						i = false;
+						nbDiv.children[0].checked = false;
 					}
 				})
-				nbDiv.children[0].checked = i;
 			}
 		})
 		rbDiv.addEventListener("click",function (e) {
