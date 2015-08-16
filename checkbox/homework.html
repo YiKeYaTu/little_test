@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8">
+</head>
+<body>
+	<div id="nb">
+		<input type="checkbox">全选
+		<input type="button" value="反选">
+	</div>
+	<div id="rb">
+		<input type="checkbox">1
+		<input type="checkbox">2
+		<input type="checkbox">3
+		<input type="checkbox">4
+	</div>
+	<script>
+		var nbDiv = document.getElementById("nb"),
+			rbDiv = document.getElementById("rb");
+		nbDiv.addEventListener("click",function (e) {
+			var target = e.target;
+			if(target.type == "checkbox"){
+				Array.prototype.forEach.call(rbDiv.children,function (item,index,array) {
+					item.checked = target.checked;						
+				})
+				
+			}else if(target.type == "button"){
+				var i = true;
+;				Array.prototype.forEach.call(rbDiv.children,function (item,index,array) {
+					item.checked = !item.checked;
+					if(!item.checked){
+						i = false;
+					}
+				})
+				nbDiv.children[0].checked = i;
+			}
+		})
+		rbDiv.addEventListener("click",function (e) {
+			var target = e.target;
+			if(target.type == "checkbox"){
+				nbDiv.children[0].checked = true;
+				Array.prototype.forEach.call(rbDiv.children,function (item,index,array) {
+					if(!item.checked){
+						nbDiv.children[0].checked = false;
+					}
+				})
+			}
+		})
+	</script>
+</body>
+</html>
