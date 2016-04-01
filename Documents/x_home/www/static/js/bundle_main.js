@@ -68,6 +68,7 @@ webpackJsonp([2],{
 					index: 0,
 					detail: 0
 				},
+				wapperDisplay: 0,
 				opacity: 0
 			};
 		},
@@ -82,7 +83,6 @@ webpackJsonp([2],{
 		},
 		scroll: function scroll(pos) {
 			var top = pos !== undefined ? pos : this.refs.realContainer.offsetTop;
-			console.log(top);
 			var oTop = document.body.scrollTop;
 			var allTimer = 200;
 			var timeScal = 1000 / 60;
@@ -97,17 +97,37 @@ webpackJsonp([2],{
 			}, timeScal);
 		},
 		changeState: function changeState(display, opacity) {
+			if (opacity === 1) {
+				this.setState({
+					wapperDisplay: opacity
+				});
+			} else {
+				setTimeout(function () {
+					this.setState({
+						wapperDisplay: opacity
+					});
+				}.bind(this), 400);
+			}
+
 			this.setState({
 				display: display,
 				opacity: opacity
 			});
+
+			opacity === 1 && setTimeout(function () {
+				opacity = 0;
+				this.changeState(display, opacity);
+			}.bind(this), 400);
 		},
 
 		load: {
 			pathname: '/static/js/',
 			prefix: 'bundle_',
+			body: document.body,
 			route: {},
 			loadScript: function loadScript(self) {
+				var _this = this;
+
 				var location = window.location.href.match(/\/([^\/]+?)\/?$/)[1];
 				var display = self.state.display;
 				var opacity = self.state.opacity;
@@ -119,25 +139,20 @@ webpackJsonp([2],{
 				}
 				display[location] = 1;
 				if (!this.route[location]) {
-					this.route[location] = {
-						load: true
-					};
-					var script = document.createElement('script');
-					script.src = this.pathname + this.prefix + location + '.js';
-					document.body.appendChild(script);
-					script.onload = function () {
-						self.changeState(display, opacity);
-						setTimeout(function () {
-							opacity = 0;
+					(function () {
+						_this.route[location] = {
+							load: true
+						};
+						var script = document.createElement('script');
+						script.src = _this.pathname + _this.prefix + location + '.js';
+						_this.body.appendChild(script);
+						script.onload = function () {
 							self.changeState(display, opacity);
-						}, 400);
-					};
+							this.body.removeChild(script);
+						}.bind(_this);
+					})();
 				} else {
 					self.changeState(display, opacity);
-					setTimeout(function () {
-						opacity = 0;
-						self.changeState(display, opacity);
-					}, 400);
 				}
 			}
 		},
@@ -168,7 +183,7 @@ webpackJsonp([2],{
 							width: '100%',
 							height: '1100px',
 							background: '#fff',
-							zIndex: '',
+							zIndex: this.state.wapperDisplay ? '1' : '-1',
 							opacity: this.state.opacity,
 							position: 'absolute',
 							WebkitTransition: 'opacity .9s',

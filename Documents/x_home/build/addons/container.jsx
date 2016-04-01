@@ -9,8 +9,9 @@ let Container = React.createClass({
 	    return {
 	    	display: {
 	    		index: 0,
-	    		detail: 0,
+	    		detail: 0
 	    	},
+	    	wapperDisplay: 0,
 	    	opacity: 0
 	    };
 	},
@@ -25,7 +26,6 @@ let Container = React.createClass({
 	},
 	scroll (pos) {
 		let top = (pos !== undefined) ? pos : this.refs.realContainer.offsetTop;
-		console.log(top);
 		let oTop = document.body.scrollTop;
 		let allTimer = 200;
 		let timeScal = 1000 / 60;
@@ -40,14 +40,32 @@ let Container = React.createClass({
 		}, timeScal);
 	},
 	changeState (display, opacity) {
+		if (opacity === 1) {
+			this.setState({
+				wapperDisplay: opacity,
+			})
+		} else {
+			setTimeout(function () {
+				this.setState({
+					wapperDisplay: opacity
+				})
+			}.bind(this), 400);
+		}
+
 		this.setState({
 			display: display,
-			opacity: opacity
+			opacity: opacity,
 		});
+		
+		opacity === 1 && setTimeout(function () {
+			opacity = 0;
+			this.changeState(display, opacity);
+		}.bind(this), 400);
 	},
 	load : {
 		pathname: '/static/js/',
 		prefix: 'bundle_',
+		body: document.body,
 		route: {},
 		loadScript (self) {
 			let location = window.location.href.match(/\/([^\/]+?)\/?$/)[1];
@@ -66,20 +84,13 @@ let Container = React.createClass({
 				}
 				let script = document.createElement('script');
 				script.src = this.pathname + this.prefix + location + '.js';
-				document.body.appendChild(script);
+				this.body.appendChild(script);
 				script.onload = function () {
-					self.changeState(display, opacity);			
-					setTimeout(function () {
-						opacity = 0;
-						self.changeState(display, opacity);
-					}, 400);
-				}
+					self.changeState(display, opacity);	
+					this.body.removeChild(script);
+				}.bind(this);
 			} else {
-				self.changeState(display, opacity);				
-				setTimeout(function () {
-					opacity = 0;
-					self.changeState(display, opacity);
-				}, 400);
+				self.changeState(display, opacity);
 			}
 			
 		} 
@@ -108,7 +119,7 @@ let Container = React.createClass({
 						width: '100%',
 						height: '1100px',
 						background: '#fff',
-						zIndex: '',
+						zIndex: this.state.wapperDisplay ? '1' : '-1',
 						opacity: this.state.opacity,
 						position: 'absolute',
 						WebkitTransition: 'opacity .9s',
