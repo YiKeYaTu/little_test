@@ -252,16 +252,17 @@ webpackJsonp([0],{
 	        return _react2.default.createElement(
 	            'div',
 	            { style: {
-	                    margin: '30px 0 20px 1%'
+	                    margin: '30px 0 20px 1%',
+	                    overflow: 'hidden'
 	                } },
 	            _react2.default.createElement(Button, { val: '-', sp: '-1' }),
 	            _react2.default.createElement(Button, { focus: 'true', val: '1' }),
 	            _react2.default.createElement(Button, { val: '2' }),
 	            _react2.default.createElement(Button, { val: '3' }),
 	            _react2.default.createElement(Button, { val: '4' }),
-	            _react2.default.createElement(Button, { val: '+', sp: '1' }),
-	            _react2.default.createElement(Button, { val: '.....' }),
-	            _react2.default.createElement(Button, { val: '90' })
+	            _react2.default.createElement(Button, { val: '...' }),
+	            _react2.default.createElement(Button, { val: '90' }),
+	            _react2.default.createElement(Button, { val: '+', sp: '1' })
 	        );
 	    }
 	});
@@ -270,13 +271,19 @@ webpackJsonp([0],{
 	    displayName: 'Button',
 	    render: function render() {
 	        return _react2.default.createElement(
-	            'button',
+	            'a',
 	            { className: 'page-button', style: {
 	                    width: '40px',
 	                    height: '40px',
 	                    lineHeight: '40px',
 	                    textAlign: 'center',
 	                    border: 'none',
+	                    display: 'block',
+	                    float: 'left',
+	                    borderTopRightRadius: this.props.sp == 1 ? '6px' : '0px',
+	                    borderBottomRightRadius: this.props.sp == 1 ? '6px' : '0px',
+	                    borderTopLeftRadius: this.props.sp == -1 ? '6px' : '0px',
+	                    borderBottomLeftRadius: this.props.sp == -1 ? '6px' : '0px',
 	                    fontSize: '18px',
 	                    background: this.props.focus == 'true' ? '#00BFFF' : '#666',
 	                    color: '#fff',

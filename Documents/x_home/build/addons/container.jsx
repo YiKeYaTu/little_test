@@ -4,6 +4,7 @@ import Logo from './main/logo.jsx';
 import Nav from './main/nav.jsx';
 import ItemList from './index/item_list.jsx';
 import Footer from './main/footer.jsx';
+import WhiteWapper from './main/white_wapper.jsx';
 let Container = React.createClass({
 	getInitialState() {
 	    return {
@@ -12,6 +13,7 @@ let Container = React.createClass({
 	    		detail: 0
 	    	},
 	    	wapperDisplay: 0,
+	    	wapperHeight: window.innerHeight,
 	    	opacity: 0
 	    };
 	},
@@ -19,6 +21,11 @@ let Container = React.createClass({
 		this.initLoad();
 	    window.onpopstate = function (e) {
 	    	this.initLoad();
+	    }.bind(this);
+	    window.onresize = function (e) {
+	    	this.setState({
+	    		wapperHeight: window.innerHeight
+	    	})
 	    }.bind(this);
 	},
 	initLoad () {
@@ -66,7 +73,17 @@ let Container = React.createClass({
 		pathname: '/static/js/',
 		prefix: 'bundle_',
 		body: document.body,
-		route: {},
+		route: {
+			index: {
+				exp: /\/index\/?$/,
+				pathname: '../index/'
+			},
+			detail: {
+				exp: /\/detail\/?$/,
+				pathname: '../detail/'
+			},
+		},
+		routeScript: {},
 		loadScript (self) {
 			let location = window.location.href.match(/\/([^\/]+?)\/?$/)[1];
 			let display = self.state.display;
@@ -78,8 +95,8 @@ let Container = React.createClass({
 				}
 			}
 			display[location] = 1;
-			if (!this.route[location]) {		
-				this.route[location] = {
+			if (!this.routeScript[location]) {		
+				this.routeScript[location] = {
 					load: true,
 				}
 				let script = document.createElement('script');
@@ -95,47 +112,80 @@ let Container = React.createClass({
 			
 		} 
 	},
-	handleItemListClick (e) {
-		let location = window.location.href;
-		e.preventDefault();
-		if (!location.match(/detail\/?$/)) {
-			history.pushState('', '', '../detail/');
-			this.initLoad();
-			this.scroll();
+	handleClickChangeHref (inf) {
+		if (arguments.length > 1) {
+			let arg = arguments;
+			let obj = {};
+			for (let i = 0, len = arg.length; i < len; i++) {
+				obj[arg[i]] = function (e) {
+					let location = window.location.href;
+					let route = this.load.route[arg[i]];
+					e.preventDefault();
+					if (!location.match(route.exp)) {
+						history.pushState('', '', route.pathname);
+						this.initLoad();
+						if (route.pathname === '../detail/') {
+							this.scroll();
+						}
+					}
+				}.bind(this);
+			}
+			return obj;
 		}
+		return function (e) {
+			let location = window.location.href;
+			let route = this.load.route[inf];
+			e.preventDefault();
+			if (!location.match(route.exp)) {
+				history.pushState('', '', route.pathname);
+				this.initLoad();
+				if (route.pathname === '../detail/') {
+					this.scroll();
+				}
+			}
+		}.bind(this);
 	},
 	render () {
 		return (
-			<div>
+			<section>
 				<Header/>
 				<Logo/>
-				<Nav focus={this.state.display}/>
-				<ItemList onClick={this.handleItemListClick}/>
-				<section ref='realContainer' style={{
-					position: 'relative',
-					overflow: 'hidden'
-				}} id='pageContainer'>
-					<section style={{
-						width: '100%',
-						height: '1100px',
-						background: '#fff',
-						zIndex: this.state.wapperDisplay ? '1' : '-1',
-						opacity: this.state.opacity,
-						position: 'absolute',
-						WebkitTransition: 'opacity .9s',
-					    MozTransition: 'opacity .9s',
-					    OTransition: 'opacity .9s',
-					    MsTransition: 'opacity .9s',
-					}} ref="white-wapper"></section>
-					<section ref='indexContainer' style={{
-						display: this.state.display.index == 1 ? 'block' : 'none'
-					}} id='indexContainer'></section>
-					<section ref='detailContainer' style={{
-						display: this.state.display.detail == 1 ? 'block' : 'none'
-					}} id='detailContainer'></section>
+				<Nav 
+					onClick={this.handleClickChangeHref('index', 'detail')} 
+					focus={this.state.display}
+				/>
+				<ItemList 
+					onClick={this.handleClickChangeHref('detail')}
+				/>
+				<WhiteWapper
+					wapperDisplay={this.state.wapperDisplay}
+					wapperHeight={this.state.wapperHeight}
+					opacity={this.state.opacity}
+				/>
+				<section 
+					ref='realContainer' 
+					style={{
+						position: 'relative',
+						overflow: 'hidden'
+					}} 
+					id='pageContainer'>
+						<section 
+							ref='indexContainer' 
+							style={{
+								display: this.state.display.index == 1 ? 'block' : 'none'
+							}} 
+							id='indexContainer'>
+						</section>
+						<section 
+							ref='detailContainer' 
+							style={{
+								display: this.state.display.detail == 1 ? 'block' : 'none'
+							}} 
+							id='detailContainer'>
+						</section>
 				</section>
 				<Footer/>
-			</div>
+			</section>
 		);
 	}
 });

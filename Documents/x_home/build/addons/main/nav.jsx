@@ -11,8 +11,8 @@ let Nav = React.createClass({
 				<ul style={{
 					overflow: 'hidden'
 				}}>
-					<NavLister focus={this.props.focus.index == 1 ? '1' : ''} val='主页'/>
-					<NavLister focus={this.props.focus.detail == 1 ? '1' : ''} val='商品列表'/>
+					<NavLister onClick={this.props.onClick['index']} focus={this.props.focus.index == 1 ? '1' : ''} val='主页'/>
+					<NavLister onClick={this.props.onClick['detail']} focus={this.props.focus.detail == 1 ? '1' : ''} val='商品列表'/>
 					<NavLister focus={this.props.focus.aboutUs == 1 ? '1' : ''} val='关于我们'/>
 					<Search/>
 				</ul>
@@ -24,7 +24,7 @@ let Nav = React.createClass({
 let NavLister = React.createClass({
 	render () {
 		return (
-			<a href=''>
+			<a onClick={this.props.onClick} href=''>
 				<li className='nav-list' style={{
 					float: 'left',
 					color: '#fff',

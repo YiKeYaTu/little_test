@@ -71,22 +71,42 @@ let Lister = React.createClass({
 
 let Slider = React.createClass({
 	render () {
+		let sliderArr = [{
+			url: ''
+		},{
+			url: ''
+		}];
 		return (
 			<ul style={{
 				width: '69%',
 				float: 'left',
 				height: '440px',
 				background: '#00BFFF',
-				marginLeft: '1%'
+				marginLeft: '1%',
+				position: 'relative'
 			}}>
-				<li style={{
-					width: '100%',
+			{
+				sliderArr.map(function (item, index) {
+					return (<SliderItem key={index} pos={index} url={item.url}/>)
+				})
+			}
+			</ul>
+		);
+	}
+});
+
+let SliderItem = React.createClass({
+	render () {
+		return (
+			<li style={{
+					width: '200%',
 					height: '100%',
+					position: 'absolute',
+					left: this.props.pos * 100 + '%',
 					// background: 'url(http://172.22.146.3/CubeApiStore/img/carousel_back_2.jpg) no-repeat',
 					backgroundSize: '100% 100%'
 				}}>
-				</li>
-			</ul>
+			</li>
 		);
 	}
 });

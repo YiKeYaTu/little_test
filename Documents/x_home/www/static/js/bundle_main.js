@@ -34,6 +34,8 @@ webpackJsonp([2],{
 		value: true
 	});
 
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 	var _react = __webpack_require__(1);
 
 	var _react2 = _interopRequireDefault(_react);
@@ -58,6 +60,10 @@ webpackJsonp([2],{
 
 	var _footer2 = _interopRequireDefault(_footer);
 
+	var _white_wapper = __webpack_require__(175);
+
+	var _white_wapper2 = _interopRequireDefault(_white_wapper);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var Container = _react2.default.createClass({
@@ -69,6 +75,7 @@ webpackJsonp([2],{
 					detail: 0
 				},
 				wapperDisplay: 0,
+				wapperHeight: window.innerHeight,
 				opacity: 0
 			};
 		},
@@ -76,6 +83,11 @@ webpackJsonp([2],{
 			this.initLoad();
 			window.onpopstate = function (e) {
 				this.initLoad();
+			}.bind(this);
+			window.onresize = function (e) {
+				this.setState({
+					wapperHeight: window.innerHeight
+				});
 			}.bind(this);
 		},
 		initLoad: function initLoad() {
@@ -124,7 +136,17 @@ webpackJsonp([2],{
 			pathname: '/static/js/',
 			prefix: 'bundle_',
 			body: document.body,
-			route: {},
+			route: {
+				index: {
+					exp: /\/index\/?$/,
+					pathname: '../index/'
+				},
+				detail: {
+					exp: /\/detail\/?$/,
+					pathname: '../detail/'
+				}
+			},
+			routeScript: {},
 			loadScript: function loadScript(self) {
 				var _this = this;
 
@@ -138,9 +160,9 @@ webpackJsonp([2],{
 					}
 				}
 				display[location] = 1;
-				if (!this.route[location]) {
+				if (!this.routeScript[location]) {
 					(function () {
-						_this.route[location] = {
+						_this.routeScript[location] = {
 							load: true
 						};
 						var script = document.createElement('script');
@@ -156,47 +178,92 @@ webpackJsonp([2],{
 				}
 			}
 		},
-		handleItemListClick: function handleItemListClick(e) {
-			var location = window.location.href;
-			e.preventDefault();
-			if (!location.match(/detail\/?$/)) {
-				history.pushState('', '', '../detail/');
-				this.initLoad();
-				this.scroll();
+		handleClickChangeHref: function handleClickChangeHref(inf) {
+			var _arguments = arguments,
+			    _this2 = this;
+
+			if (arguments.length > 1) {
+				var _ret2 = function () {
+					var arg = _arguments;
+					var obj = {};
+
+					var _loop = function _loop(i, len) {
+						obj[arg[i]] = function (e) {
+							var location = window.location.href;
+							var route = this.load.route[arg[i]];
+							e.preventDefault();
+							if (!location.match(route.exp)) {
+								history.pushState('', '', route.pathname);
+								this.initLoad();
+								if (route.pathname === '../detail/') {
+									this.scroll();
+								}
+							}
+						}.bind(_this2);
+					};
+
+					for (var i = 0, len = arg.length; i < len; i++) {
+						_loop(i, len);
+					}
+					return {
+						v: obj
+					};
+				}();
+
+				if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object") return _ret2.v;
 			}
+			return function (e) {
+				var location = window.location.href;
+				var route = this.load.route[inf];
+				e.preventDefault();
+				if (!location.match(route.exp)) {
+					history.pushState('', '', route.pathname);
+					this.initLoad();
+					if (route.pathname === '../detail/') {
+						this.scroll();
+					}
+				}
+			}.bind(this);
 		},
 		render: function render() {
 			return _react2.default.createElement(
-				'div',
+				'section',
 				null,
 				_react2.default.createElement(_header2.default, null),
 				_react2.default.createElement(_logo2.default, null),
-				_react2.default.createElement(_nav2.default, { focus: this.state.display }),
-				_react2.default.createElement(_item_list2.default, { onClick: this.handleItemListClick }),
+				_react2.default.createElement(_nav2.default, {
+					onClick: this.handleClickChangeHref('index', 'detail'),
+					focus: this.state.display
+				}),
+				_react2.default.createElement(_item_list2.default, {
+					onClick: this.handleClickChangeHref('detail')
+				}),
+				_react2.default.createElement(_white_wapper2.default, {
+					wapperDisplay: this.state.wapperDisplay,
+					wapperHeight: this.state.wapperHeight,
+					opacity: this.state.opacity
+				}),
 				_react2.default.createElement(
 					'section',
-					{ ref: 'realContainer', style: {
+					{
+						ref: 'realContainer',
+						style: {
 							position: 'relative',
 							overflow: 'hidden'
-						}, id: 'pageContainer' },
-					_react2.default.createElement('section', { style: {
-							width: '100%',
-							height: '1100px',
-							background: '#fff',
-							zIndex: this.state.wapperDisplay ? '1' : '-1',
-							opacity: this.state.opacity,
-							position: 'absolute',
-							WebkitTransition: 'opacity .9s',
-							MozTransition: 'opacity .9s',
-							OTransition: 'opacity .9s',
-							MsTransition: 'opacity .9s'
-						}, ref: 'white-wapper' }),
-					_react2.default.createElement('section', { ref: 'indexContainer', style: {
+						},
+						id: 'pageContainer' },
+					_react2.default.createElement('section', {
+						ref: 'indexContainer',
+						style: {
 							display: this.state.display.index == 1 ? 'block' : 'none'
-						}, id: 'indexContainer' }),
-					_react2.default.createElement('section', { ref: 'detailContainer', style: {
+						},
+						id: 'indexContainer' }),
+					_react2.default.createElement('section', {
+						ref: 'detailContainer',
+						style: {
 							display: this.state.display.detail == 1 ? 'block' : 'none'
-						}, id: 'detailContainer' })
+						},
+						id: 'detailContainer' })
 				),
 				_react2.default.createElement(_footer2.default, null)
 			);
@@ -378,8 +445,8 @@ webpackJsonp([2],{
 					{ style: {
 							overflow: 'hidden'
 						} },
-					_react2.default.createElement(NavLister, { focus: this.props.focus.index == 1 ? '1' : '', val: '主页' }),
-					_react2.default.createElement(NavLister, { focus: this.props.focus.detail == 1 ? '1' : '', val: '商品列表' }),
+					_react2.default.createElement(NavLister, { onClick: this.props.onClick['index'], focus: this.props.focus.index == 1 ? '1' : '', val: '主页' }),
+					_react2.default.createElement(NavLister, { onClick: this.props.onClick['detail'], focus: this.props.focus.detail == 1 ? '1' : '', val: '商品列表' }),
 					_react2.default.createElement(NavLister, { focus: this.props.focus.aboutUs == 1 ? '1' : '', val: '关于我们' }),
 					_react2.default.createElement(Search, null)
 				)
@@ -392,7 +459,7 @@ webpackJsonp([2],{
 		render: function render() {
 			return _react2.default.createElement(
 				'a',
-				{ href: '' },
+				{ onClick: this.props.onClick, href: '' },
 				_react2.default.createElement(
 					'li',
 					{ className: 'nav-list', style: {
@@ -556,6 +623,11 @@ webpackJsonp([2],{
 	var Slider = _react2.default.createClass({
 		displayName: 'Slider',
 		render: function render() {
+			var sliderArr = [{
+				url: ''
+			}, {
+				url: ''
+			}];
 			return _react2.default.createElement(
 				'ul',
 				{ style: {
@@ -563,15 +635,27 @@ webpackJsonp([2],{
 						float: 'left',
 						height: '440px',
 						background: '#00BFFF',
-						marginLeft: '1%'
+						marginLeft: '1%',
+						position: 'relative'
 					} },
-				_react2.default.createElement('li', { style: {
-						width: '100%',
-						height: '100%',
-						// background: 'url(http://172.22.146.3/CubeApiStore/img/carousel_back_2.jpg) no-repeat',
-						backgroundSize: '100% 100%'
-					} })
+				sliderArr.map(function (item, index) {
+					return _react2.default.createElement(SliderItem, { key: index, pos: index, url: item.url });
+				})
 			);
+		}
+	});
+
+	var SliderItem = _react2.default.createClass({
+		displayName: 'SliderItem',
+		render: function render() {
+			return _react2.default.createElement('li', { style: {
+					width: '200%',
+					height: '100%',
+					position: 'absolute',
+					left: this.props.pos * 100 + '%',
+					// background: 'url(http://172.22.146.3/CubeApiStore/img/carousel_back_2.jpg) no-repeat',
+					backgroundSize: '100% 100%'
+				} });
 		}
 	});
 	exports.default = ItemList;
@@ -708,6 +792,44 @@ webpackJsonp([2],{
 	});
 
 	exports.default = Footer;
+
+/***/ },
+
+/***/ 175:
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+					value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var WhiteWapper = _react2.default.createClass({
+					displayName: 'WhiteWapper',
+					render: function render() {
+									return _react2.default.createElement('section', { style: {
+																	width: '100%',
+																	height: this.props.wapperHeight + 'px',
+																	background: '#fff',
+																	zIndex: this.props.wapperDisplay ? '1' : '-1',
+																	opacity: this.props.opacity,
+																	position: 'fixed',
+																	top: '0px',
+																	WebkitTransition: 'opacity .9s',
+																	MozTransition: 'opacity .9s',
+																	OTransition: 'opacity .9s',
+																	MsTransition: 'opacity .9s'
+													}, ref: 'white-wapper' });
+					}
+	});
+
+	exports.default = WhiteWapper;
 
 /***/ }
 
